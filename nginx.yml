@@ -1,0 +1,35 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Mise à jour
+      yum: update_cache=yes 
+    - name: Installation d'epel-release
+      become: true
+      yum: name=epel-release state=latest     
+    - name: upgrade all packages
+      yum: 
+       name: '*'
+       state: latest
+    - name: Nginx - Contrôle de version
+      yum: name=nginx state=latest
+    - name: Nginx - Contrôle état démarré
+      service:
+          name: nginx
+          state: started
+    - name: Firewall https
+      firewalld:
+         service: https 
+         permanent: yes
+         state: enabled
+    - name: Firewall http
+      firewalld:
+         service: http
+         permanent: yes
+         state: enabled
+    - name: Redémarrage nginx
+      service:
+        name: nginx
+        state: restarted
+      become: yes
+
